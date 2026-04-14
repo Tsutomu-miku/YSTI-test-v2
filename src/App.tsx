@@ -1,9 +1,10 @@
-import React from 'react';
+import React, { Suspense, lazy, useState, useEffect } from 'react';
 import { useQuiz } from './hooks/useQuiz';
 import StarField from './components/StarField';
 import IntroScreen from './components/IntroScreen';
 import QuizScreen from './components/QuizScreen';
-import ResultScreen from './components/ResultScreen';
+
+const ResultScreen = lazy(() => import('./components/ResultScreen'));
 
 const App: React.FC = () => {
   const {
@@ -19,6 +20,14 @@ const App: React.FC = () => {
   } = useQuiz();
 
   const currentQuestion = questions[currentQ];
+
+  // Lazy-load splash art only when result is ready
+  const [splashArt, setSplashArt] = useState<Record<string, string> | undefined>(undefined);
+  useEffect(() => {
+    if (screen === 'result') {
+      import('./data/splashArt').then((mod) => setSplashArt(mod.default));
+    }
+  }, [screen]);
 
   return (
     <div className="app-shell">
@@ -40,7 +49,9 @@ const App: React.FC = () => {
       )}
 
       {screen === 'result' && result && (
-        <ResultScreen result={result} onRestart={restart} />
+        <Suspense fallback={<div className="screen" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}><p style={{ color: '#d4a850' }}>加载中…</p></div>}>
+          <ResultScreen result={result} splashArt={splashArt} onRestart={restart} />
+        </Suspense>
       )}
     </div>
   );

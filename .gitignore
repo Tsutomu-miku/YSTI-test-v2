@@ -6,3 +6,6 @@ _wiki_cache/
 wiki_splash_b64.json
 download_wiki_splash.py
 src/styles/result_new.css
+extract_splash.py
+inject_splash.py
+download_wiki_splash_hd.py

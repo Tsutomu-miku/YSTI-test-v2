@@ -34,6 +34,11 @@ const IntroScreen: React.FC<IntroScreenProps> = ({ onStart }) => {
       <button className="btn-gold" onClick={onStart}>
         开始测试
       </button>
+
+      <footer className="intro__disclaimer">
+        粉丝自制 · 非商业 · 与米哈游/HoYoverse 无关<br />
+        游戏素材版权归 COGNOSPHERE PTE. LTD. 所有
+      </footer>
     </div>
   );
 };
