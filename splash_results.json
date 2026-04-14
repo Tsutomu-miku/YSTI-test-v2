@@ -1,0 +1,38 @@
+{
+  "success": {
+    "ZHONGLI": "splash-art/zhongli.webp",
+    "HUTAO": "splash-art/hutao.webp",
+    "KEQING": "splash-art/keqing.webp",
+    "VENTI": "splash-art/venti.webp",
+    "GANYU": "splash-art/ganyu.webp",
+    "XIAO": "splash-art/xiao.webp",
+    "NAHIDA": "splash-art/nahida.webp",
+    "TARTAGLIA": "splash-art/tartaglia.webp",
+    "AYAKA": "splash-art/ayaka.webp",
+    "KLEE": "splash-art/klee.webp",
+    "RAIDEN": "splash-art/raiden.webp",
+    "WANDERER": "splash-art/wanderer.webp",
+    "QIQI": "splash-art/qiqi.webp",
+    "FURINA": "splash-art/furina.webp",
+    "ZHONGLI_BROKE": "splash-art/zhongli_broke.webp",
+    "DILUC": "splash-art/diluc.webp",
+    "JEAN": "splash-art/jean.webp",
+    "ALBEDO": "splash-art/albedo.webp",
+    "BENNETT": "splash-art/bennett.webp",
+    "FISCHL": "splash-art/fischl.webp",
+    "KAZUHA": "splash-art/kazuha.webp",
+    "YOIMIYA": "splash-art/yoimiya.webp",
+    "EULA": "splash-art/eula.webp",
+    "ALHAITHAM": "splash-art/alhaitham.webp",
+    "CYNO": "splash-art/cyno.webp",
+    "KOKOMI": "splash-art/kokomi.webp",
+    "YELAN": "splash-art/yelan.webp",
+    "SHENHE": "splash-art/shenhe.webp",
+    "NEUVILLETTE": "splash-art/neuvillette.webp",
+    "NAVIA": "splash-art/navia.webp",
+    "ITTO": "splash-art/itto.webp"
+  },
+  "failed": [
+    "PAIMON"
+  ]
+}

@@ -1,165 +1,239 @@
-import React, { useState, useCallback } from 'react';
-import type { Character, Level, MatchResult } from '../types';
-import { dimensions, dimensionOrder } from '../data/dimensions';
+import React, { useMemo, useState, useCallback } from 'react';
+import { elementIcons } from '../data/elementIcons';
+import { dimensions } from '../data/dimensions';
+import type { Character, MatchResult, Level } from '../types';
 
-interface ResultData {
-  finalType: Character;
-  similarity: number;
-  exactMatches: number;
-  ranked: MatchResult[];
-  levels: Record<string, Level>;
-  rawScores: Record<string, number>;
-  badge: string;
-  sub: string;
-}
+/* ------------------------------------------------------------------ */
+/*  Props                                                              */
+/* ------------------------------------------------------------------ */
 
 interface ResultScreenProps {
-  result: ResultData;
+  result: {
+    finalType: Character;
+    similarity: number;
+    exactMatches: number;
+    ranked: MatchResult[];
+    levels: Record<string, Level>;
+    rawScores: Record<string, number>;
+    badge: string;
+    sub: string;
+  };
   onRestart: () => void;
 }
 
-const ELEMENT_MAP: Record<string, string> = {
-  '火': '🔥', '水': '💧', '雷': '⚡', '风': '🍃',
-  '冰': '❄️', '草': '🌿', '岩': '🪨', '???': '✨',
-};
+/* ------------------------------------------------------------------ */
+/*  Helpers                                                            */
+/* ------------------------------------------------------------------ */
 
-const ELEMENT_CSS_VAR: Record<string, string> = {
-  '火': 'var(--pyro)', '水': 'var(--hydro)', '雷': 'var(--electro)',
-  '风': 'var(--anemo)', '冰': 'var(--cryo)', '草': 'var(--dendro)',
-  '岩': 'var(--geo)', '???': 'var(--gold)',
-};
-
-function levelBarWidth(level: Level): string {
-  return level === 'H' ? '100%' : level === 'M' ? '60%' : '28%';
+/** Level → percentage for dimension bar (H=90, M=50, L=10) */
+function levelToPct(level: Level): number {
+  return level === 'H' ? 90 : level === 'M' ? 50 : 10;
 }
 
-function levelBarColor(level: Level): string {
-  return level === 'H' ? 'var(--gold-bright)' : level === 'M' ? 'var(--gold)' : 'var(--text-dim)';
-}
+/* ------------------------------------------------------------------ */
+/*  Component                                                          */
+/* ------------------------------------------------------------------ */
 
 const ResultScreen: React.FC<ResultScreenProps> = ({ result, onRestart }) => {
-  const [showToast, setShowToast] = useState(false);
-  const { finalType, badge, sub, levels, ranked } = result;
-  const elementColor = ELEMENT_CSS_VAR[finalType.element] || 'var(--gold)';
-  const elementEmoji = ELEMENT_MAP[finalType.element] || '✨';
+  const { finalType: character, ranked, levels, badge, sub } = result;
+
+  const [toastVisible, setToastVisible] = useState(false);
+
+  /* ---- share text ---- */
+  const shareText = useMemo(() => {
+    const levelStr = dimensions.map(d => levels[d.key] ?? '?').join('');
+    return `【YSTI v2.0】我的原神人格是「${character.cn}」(${levelStr})！快来测测你是谁 👉`;
+  }, [character, levels]);
 
   const handleShare = useCallback(async () => {
-    const dimText = dimensionOrder
-      .map(dim => `${dimensions.find(d => d.key === dim)?.name || dim}: ${levels[dim]}`)
-      .join(' | ');
-    const text = [
-      `【YSTI v2.0 测试结果】`,
-      `我是：${finalType.cn}（${finalType.element}元素）`,
-      badge, ``,
-      `维度：${dimText}`, ``,
-      `"${finalType.intro}"`, ``,
-      `来测测提瓦特中的你吧！`,
-    ].join('\n');
     try {
-      await navigator.clipboard.writeText(text);
+      await navigator.clipboard.writeText(shareText);
     } catch {
       const ta = document.createElement('textarea');
-      ta.value = text;
+      ta.value = shareText;
+      ta.style.position = 'fixed';
+      ta.style.opacity = '0';
       document.body.appendChild(ta);
       ta.select();
       document.execCommand('copy');
       document.body.removeChild(ta);
     }
-    setShowToast(true);
-    setTimeout(() => setShowToast(false), 2000);
-  }, [finalType, badge, levels]);
+    setToastVisible(true);
+    setTimeout(() => setToastVisible(false), 2200);
+  }, [shareText]);
 
+  /* ---- element icon ---- */
+  const elIcon: string | undefined = elementIcons[character.element];
+
+  /* ---- top 3 ---- */
   const top3 = ranked.slice(0, 3);
 
+  /* ---- render ---- */
   return (
-    <div className="screen result">
-      {/* Hero Card */}
-      <section
-        className="result__hero"
-        style={{ '--element-color': elementColor } as React.CSSProperties}
-      >
-        {/* Character Portrait */}
-        {finalType.image && (
-          <div className="result__portrait">
+    <section className="result" aria-label="测试结果">
+      {/* ========== SPLASH BACKGROUND ========== */}
+      {character.splash && (
+        <div className="result__splash-bg" aria-hidden="true">
+          <img
+            src={character.splash}
+            alt=""
+            className="result__splash-img"
+            draggable={false}
+          />
+          <div className="result__splash-gradient" />
+        </div>
+      )}
+
+      {/* ========== HERO ========== */}
+      <div className="result__hero">
+        {/* circular portrait */}
+        <div
+          className="result__portrait-ring"
+          style={{ borderColor: character.elementColor }}
+        >
+          <img
+            className="result__portrait"
+            src={character.image || character.icon}
+            alt={character.cn}
+          />
+        </div>
+
+        {/* element icon + name */}
+        <div className="result__name-row">
+          {elIcon && (
             <img
-              src={finalType.image}
-              alt={finalType.cn}
-              className="result__portrait-img"
+              className="result__element-icon"
+              src={elIcon}
+              alt={character.element}
+              style={{ '--el-color': character.elementColor } as React.CSSProperties}
             />
-            <div
-              className="result__portrait-glow"
-              style={{ background: elementColor }}
-            />
-          </div>
-        )}
+          )}
+          <h1 className="result__name" style={{ color: character.elementColor }}>
+            {character.cn}
+          </h1>
+        </div>
 
-        <span className="result__element-icon">{elementEmoji}</span>
-        <h1 className="result__character-name">{finalType.code}</h1>
-        <p className="result__character-cn">{finalType.cn}</p>
-        <span className="result__badge">{badge}</span>
-        <p className="result__sub">{sub}</p>
-      </section>
+        {/* badge + sub */}
+        <p className="result__badge-text">{badge}</p>
+        <p className="result__sub-text">{sub}</p>
 
-      {/* Intro & Description */}
-      <section className="result__info">
-        <p className="result__intro-quote">{finalType.intro}</p>
-        <div className="result__divider" />
-        <p className="result__desc">{finalType.desc}</p>
-      </section>
-
-      {/* Dimension Breakdown */}
-      <section className="result__dimensions">
-        <h3 className="result__dim-title">维度分析</h3>
-        {dimensionOrder.map(dim => {
-          const level = levels[dim];
-          const dimData = dimensions.find(d => d.key === dim);
-          return (
-            <div className="dim-row" key={dim}>
-              <span className="dim-row__name">{dimData?.name || dim}</span>
-              <div className="dim-row__bar">
-                <div
-                  className="dim-row__bar-fill"
-                  style={{
-                    width: levelBarWidth(level),
-                    background: levelBarColor(level),
-                  }}
-                />
-              </div>
-              <span className={`dim-row__level dim-row__level--${level}`}>
-                {level}
-              </span>
-            </div>
-          );
-        })}
-      </section>
-
-      {/* Top 3 Ranking */}
-      <section className="result__ranking">
-        <h3 className="result__ranking-title">最相似角色 TOP 3</h3>
-        {top3.map((r, i) => (
-          <div className="rank-row" key={r.character.code}>
-            <span className="rank-row__position">{i + 1}</span>
-            <span className="rank-row__icon">
-              {r.character.image ? (
-                <img src={r.character.image} alt={r.character.cn} className="rank-row__avatar" />
-              ) : (
-                ELEMENT_MAP[r.character.element] || '✨'
-              )}
-            </span>
-            <span className="rank-row__name">{r.character.cn}</span>
-            <span className="rank-row__score">{r.similarity}%</span>
-          </div>
-        ))}
-      </section>
-
-      {/* Actions */}
-      <div className="result__actions">
-        <button className="btn-gold" onClick={onRestart}>重新测试</button>
-        <button className="btn-secondary" onClick={handleShare}>分享结果</button>
+        {/* intro */}
+        <p className="result__intro">{character.intro}</p>
       </div>
 
-      {showToast && <div className="toast">已复制到剪贴板！</div>}
-    </div>
+      {/* ========== DESCRIPTION ========== */}
+      <div className="result__desc-section">
+        <p className="result__desc">{character.desc}</p>
+      </div>
+
+      {/* ========== DIMENSION BARS ========== */}
+      <div className="result__dimensions">
+        <h2 className="result__section-title">维度详情</h2>
+        <div className="result__dim-list">
+          {dimensions.map((dim) => {
+            const level = levels[dim.key] ?? 'M';
+            const pct = levelToPct(level);
+            return (
+              <div className="result__dim" key={dim.key}>
+                <div className="result__dim-labels">
+                  <span className="result__dim-name">{dim.name}</span>
+                  <span
+                    className={`result__dim-level result__dim-level--${level}`}
+                  >
+                    {level}
+                  </span>
+                </div>
+                <div className="result__bar-track">
+                  <div
+                    className="result__bar-fill"
+                    style={{
+                      width: `${pct}%`,
+                      background: character.elementColor,
+                    }}
+                  />
+                </div>
+                <p className="result__dim-desc">{dim.levels[level]}</p>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* ========== TOP 3 RANKING ========== */}
+      {top3.length > 0 && (
+        <div className="result__ranking">
+          <h2 className="result__section-title">最相似角色 TOP 3</h2>
+          <ol className="result__rank-list">
+            {top3.map((entry, idx) => {
+              const rankElIcon: string | undefined =
+                elementIcons[entry.character.element];
+              return (
+                <li className="result__rank-item" key={entry.character.code}>
+                  <span className="result__rank-number">{idx + 1}</span>
+                  <img
+                    className="result__rank-avatar"
+                    src={entry.character.image || entry.character.icon}
+                    alt={entry.character.cn}
+                  />
+                  <div className="result__rank-info">
+                    <span className="result__rank-name">
+                      {rankElIcon && (
+                        <img
+                          className="result__rank-element"
+                          src={rankElIcon}
+                          alt={entry.character.element}
+                        />
+                      )}
+                      {entry.character.cn}
+                    </span>
+                    <span className="result__rank-score">
+                      匹配度 {entry.similarity}%
+                    </span>
+                  </div>
+                  <div className="result__rank-bar-track">
+                    <div
+                      className="result__rank-bar-fill"
+                      style={{
+                        width: `${entry.similarity}%`,
+                        background: entry.character.elementColor,
+                      }}
+                    />
+                  </div>
+                </li>
+              );
+            })}
+          </ol>
+        </div>
+      )}
+
+      {/* ========== ACTION BUTTONS ========== */}
+      <div className="result__actions">
+        <button
+          className="result__btn result__btn--share"
+          onClick={handleShare}
+          style={{
+            borderColor: character.elementColor,
+            color: character.elementColor,
+          }}
+        >
+          分享结果
+        </button>
+        <button className="result__btn result__btn--restart" onClick={onRestart}>
+          重新测试
+        </button>
+      </div>
+
+      {/* ========== TOAST ========== */}
+      <div
+        className={
+          'result__toast' + (toastVisible ? ' result__toast--visible' : '')
+        }
+        role="status"
+        aria-live="polite"
+      >
+        已复制到剪贴板 ✓
+      </div>
+    </section>
   );
 };
 
