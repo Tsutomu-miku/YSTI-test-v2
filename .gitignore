@@ -9,3 +9,4 @@ src/styles/result_new.css
 extract_splash.py
 inject_splash.py
 download_wiki_splash_hd.py
+compress_webp.py
