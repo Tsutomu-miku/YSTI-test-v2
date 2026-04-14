@@ -3,6 +3,7 @@ import { useQuiz } from './hooks/useQuiz';
 import StarField from './components/StarField';
 import IntroScreen from './components/IntroScreen';
 import QuizScreen from './components/QuizScreen';
+import { loadSplash } from './data/splashLoader';
 
 const ResultScreen = lazy(() => import('./components/ResultScreen'));
 
@@ -21,13 +22,18 @@ const App: React.FC = () => {
 
   const currentQuestion = questions[currentQ];
 
-  // Lazy-load splash art only when result is ready
-  const [splashArt, setSplashArt] = useState<Record<string, string> | undefined>(undefined);
+  // Load ONLY the matched character's splash art (not all 32)
+  const [splashArt, setSplashArt] = useState<Record<string, string>>({});
   useEffect(() => {
-    if (screen === 'result') {
-      import('./data/splashArt').then((mod) => setSplashArt(mod.default));
+    if (screen === 'result' && result) {
+      const code = result.finalType.code;
+      if (!splashArt[code]) {
+        loadSplash(code).then((uri) => {
+          if (uri) setSplashArt((prev) => ({ ...prev, [code]: uri }));
+        });
+      }
     }
-  }, [screen]);
+  }, [screen, result]);
 
   return (
     <div className="app-shell">

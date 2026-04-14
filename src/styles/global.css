@@ -534,8 +534,8 @@ h1, h2, h3, h4 {
   bottom: 0;
   left: 0;
   right: 0;
-  height: 70%;
-  background: linear-gradient(to top, var(--bg-deep) 0%, var(--bg-deep) 12%, rgba(11, 16, 38, 0.85) 40%, rgba(11, 16, 38, 0.4) 65%, transparent 100%);
+  height: 75%;
+  background: linear-gradient(to top, var(--bg-deep) 0%, var(--bg-deep) 18%, rgba(11, 16, 38, 0.88) 42%, rgba(11, 16, 38, 0.45) 68%, transparent 100%);
   z-index: 1;
 }
 
@@ -598,15 +598,14 @@ h1, h2, h3, h4 {
 .result__identity {
   position: relative;
   z-index: 3;
+  width: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 8px;
-  padding: 20px 24px 32px;
+  padding: 28px 24px 32px;
   text-align: center;
   animation: fadeUp 0.8s 0.6s cubic-bezier(0.22, 1, 0.36, 1) both;
-  background: linear-gradient(to top, rgba(11, 16, 38, 0.92) 0%, rgba(11, 16, 38, 0.6) 60%, transparent 100%);
-  border-radius: 12px 12px 0 0;
 }
 
 /* ---------- 5-Star Indicator ---------- */
