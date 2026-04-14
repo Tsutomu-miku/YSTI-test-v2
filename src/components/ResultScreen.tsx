@@ -3,10 +3,6 @@ import { elementIcons } from '../data/elementIcons';
 import { dimensions } from '../data/dimensions';
 import type { Character, MatchResult, Level } from '../types';
 
-/* ------------------------------------------------------------------ */
-/*  Props                                                              */
-/* ------------------------------------------------------------------ */
-
 interface ResultScreenProps {
   result: {
     finalType: Character;
@@ -21,25 +17,14 @@ interface ResultScreenProps {
   onRestart: () => void;
 }
 
-/* ------------------------------------------------------------------ */
-/*  Helpers                                                            */
-/* ------------------------------------------------------------------ */
-
-/** Level → percentage for dimension bar (H=90, M=50, L=10) */
 function levelToPct(level: Level): number {
   return level === 'H' ? 90 : level === 'M' ? 50 : 10;
 }
 
-/* ------------------------------------------------------------------ */
-/*  Component                                                          */
-/* ------------------------------------------------------------------ */
-
 const ResultScreen: React.FC<ResultScreenProps> = ({ result, onRestart }) => {
   const { finalType: character, ranked, levels, badge, sub } = result;
-
   const [toastVisible, setToastVisible] = useState(false);
 
-  /* ---- share text ---- */
   const shareText = useMemo(() => {
     const levelStr = dimensions.map(d => levels[d.key] ?? '?').join('');
     return `【YSTI v2.0】我的原神人格是「${character.cn}」(${levelStr})！快来测测你是谁 👉`;
@@ -62,171 +47,193 @@ const ResultScreen: React.FC<ResultScreenProps> = ({ result, onRestart }) => {
     setTimeout(() => setToastVisible(false), 2200);
   }, [shareText]);
 
-  /* ---- element icon ---- */
   const elIcon: string | undefined = elementIcons[character.element];
-
-  /* ---- top 3 ---- */
   const top3 = ranked.slice(0, 3);
 
-  /* ---- render ---- */
   return (
     <section className="result" aria-label="测试结果">
-      {/* ========== SPLASH BACKGROUND ========== */}
-      {character.splash && (
-        <div className="result__splash-bg" aria-hidden="true">
-          <img
-            src={character.splash}
-            alt=""
-            className="result__splash-img"
-            draggable={false}
-          />
-          <div className="result__splash-gradient" />
-        </div>
-      )}
-
-      {/* ========== HERO ========== */}
-      <div className="result__hero">
-        {/* circular portrait */}
-        <div
-          className="result__portrait-ring"
-          style={{ borderColor: character.elementColor }}
-        >
-          <img
-            className="result__portrait"
-            src={character.image || character.icon}
-            alt={character.cn}
-          />
-        </div>
-
-        {/* element icon + name */}
-        <div className="result__name-row">
-          {elIcon && (
+      {/* ═══════ HERO — Cinematic Splash Reveal ═══════ */}
+      <div
+        className="result__hero"
+        style={{ '--el-color': character.elementColor } as React.CSSProperties}
+      >
+        {character.splash && (
+          <div className="result__splash-viewport">
             <img
-              className="result__element-icon"
-              src={elIcon}
-              alt={character.element}
-              style={{ '--el-color': character.elementColor } as React.CSSProperties}
+              src={character.splash}
+              alt={character.cn}
+              className="result__splash-art"
+              draggable={false}
             />
-          )}
-          <h1 className="result__name" style={{ color: character.elementColor }}>
-            {character.cn}
-          </h1>
-        </div>
+            {/* bottom gradient fade */}
+            <div className="result__splash-fade" aria-hidden="true" />
+            {/* side vignette */}
+            <div className="result__splash-vignette" aria-hidden="true" />
+            {/* top subtle darken for breathing room */}
+            <div className="result__splash-top" aria-hidden="true" />
+          </div>
+        )}
 
-        {/* badge + sub */}
-        <p className="result__badge-text">{badge}</p>
-        <p className="result__sub-text">{sub}</p>
+        {/* golden shimmer particles */}
+        <div className="result__shimmer" aria-hidden="true" />
 
-        {/* intro */}
-        <p className="result__intro">{character.intro}</p>
-      </div>
+        {/* Character Identity — overlaid at bottom */}
+        <div className="result__identity">
+          <div className="result__stars" aria-hidden="true">
+            <span>★</span><span>★</span><span>★</span><span>★</span><span>★</span>
+          </div>
 
-      {/* ========== DESCRIPTION ========== */}
-      <div className="result__desc-section">
-        <p className="result__desc">{character.desc}</p>
-      </div>
+          <div className="result__name-group">
+            {elIcon && (
+              <img
+                className="result__el-icon"
+                src={elIcon}
+                alt={character.element}
+              />
+            )}
+            <h1
+              className="result__char-name"
+              style={{ color: character.elementColor }}
+            >
+              {character.cn}
+            </h1>
+          </div>
 
-      {/* ========== DIMENSION BARS ========== */}
-      <div className="result__dimensions">
-        <h2 className="result__section-title">维度详情</h2>
-        <div className="result__dim-list">
-          {dimensions.map((dim) => {
-            const level = levels[dim.key] ?? 'M';
-            const pct = levelToPct(level);
-            return (
-              <div className="result__dim" key={dim.key}>
-                <div className="result__dim-labels">
-                  <span className="result__dim-name">{dim.name}</span>
-                  <span
-                    className={`result__dim-level result__dim-level--${level}`}
-                  >
-                    {level}
-                  </span>
-                </div>
-                <div className="result__bar-track">
-                  <div
-                    className="result__bar-fill"
-                    style={{
-                      width: `${pct}%`,
-                      background: character.elementColor,
-                    }}
-                  />
-                </div>
-                <p className="result__dim-desc">{dim.levels[level]}</p>
-              </div>
-            );
-          })}
+          <div
+            className="result__rule"
+            style={{
+              background: `linear-gradient(90deg, transparent, ${character.elementColor}55, transparent)`,
+            }}
+          />
+
+          <p className="result__badge">{badge}</p>
+          <p className="result__sub">{sub}</p>
+          <p className="result__similarity">
+            匹配度 <strong>{result.similarity}%</strong>
+          </p>
         </div>
       </div>
 
-      {/* ========== TOP 3 RANKING ========== */}
-      {top3.length > 0 && (
-        <div className="result__ranking">
-          <h2 className="result__section-title">最相似角色 TOP 3</h2>
-          <ol className="result__rank-list">
-            {top3.map((entry, idx) => {
-              const rankElIcon: string | undefined =
-                elementIcons[entry.character.element];
+      {/* ═══════ BODY CONTENT ═══════ */}
+      <div className="result__body">
+        {/* Description */}
+        <div className="result__text-section">
+          <p className="result__intro">{character.intro}</p>
+          <p className="result__desc">{character.desc}</p>
+        </div>
+
+        {/* Dimension Bars */}
+        <div className="result__dimensions">
+          <h2 className="result__heading">
+            <span className="result__heading-ornament">◆</span>
+            维度详情
+            <span className="result__heading-ornament">◆</span>
+          </h2>
+          <div className="result__dim-grid">
+            {dimensions.map((dim) => {
+              const level = levels[dim.key] ?? 'M';
+              const pct = levelToPct(level);
               return (
-                <li className="result__rank-item" key={entry.character.code}>
-                  <span className="result__rank-number">{idx + 1}</span>
-                  <img
-                    className="result__rank-avatar"
-                    src={entry.character.image || entry.character.icon}
-                    alt={entry.character.cn}
-                  />
-                  <div className="result__rank-info">
-                    <span className="result__rank-name">
-                      {rankElIcon && (
-                        <img
-                          className="result__rank-element"
-                          src={rankElIcon}
-                          alt={entry.character.element}
-                        />
-                      )}
-                      {entry.character.cn}
-                    </span>
-                    <span className="result__rank-score">
-                      匹配度 {entry.similarity}%
+                <div className="result__dim" key={dim.key}>
+                  <div className="result__dim-header">
+                    <span className="result__dim-name">{dim.name}</span>
+                    <span
+                      className={`result__dim-level result__dim-level--${level}`}
+                    >
+                      {level}
                     </span>
                   </div>
-                  <div className="result__rank-bar-track">
+                  <div className="result__bar">
                     <div
-                      className="result__rank-bar-fill"
+                      className="result__bar-fill"
                       style={{
-                        width: `${entry.similarity}%`,
-                        background: entry.character.elementColor,
+                        width: `${pct}%`,
+                        background: character.elementColor,
                       }}
                     />
                   </div>
-                </li>
+                  <p className="result__dim-desc">{dim.levels[level]}</p>
+                </div>
               );
             })}
-          </ol>
+          </div>
         </div>
-      )}
 
-      {/* ========== ACTION BUTTONS ========== */}
-      <div className="result__actions">
-        <button
-          className="result__btn result__btn--share"
-          onClick={handleShare}
-          style={{
-            borderColor: character.elementColor,
-            color: character.elementColor,
-          }}
-        >
-          分享结果
-        </button>
-        <button className="result__btn result__btn--restart" onClick={onRestart}>
-          重新测试
-        </button>
+        {/* TOP 3 Ranking */}
+        {top3.length > 0 && (
+          <div className="result__ranking">
+            <h2 className="result__heading">
+              <span className="result__heading-ornament">◆</span>
+              最相似角色 TOP 3
+              <span className="result__heading-ornament">◆</span>
+            </h2>
+            <ol className="result__top3">
+              {top3.map((entry, idx) => {
+                const rElIcon = elementIcons[entry.character.element];
+                return (
+                  <li className="result__rank" key={entry.character.code}>
+                    <span className="result__rank-n">{idx + 1}</span>
+                    <img
+                      className="result__rank-avatar"
+                      src={entry.character.image || entry.character.icon}
+                      alt={entry.character.cn}
+                    />
+                    <div className="result__rank-meta">
+                      <span className="result__rank-name">
+                        {rElIcon && (
+                          <img
+                            className="result__rank-el"
+                            src={rElIcon}
+                            alt=""
+                          />
+                        )}
+                        {entry.character.cn}
+                      </span>
+                      <span className="result__rank-pct">
+                        {entry.similarity}%
+                      </span>
+                    </div>
+                    <div className="result__rank-bar">
+                      <div
+                        className="result__rank-bar-fill"
+                        style={{
+                          width: `${entry.similarity}%`,
+                          background: entry.character.elementColor,
+                        }}
+                      />
+                    </div>
+                  </li>
+                );
+              })}
+            </ol>
+          </div>
+        )}
+
+        {/* Action Buttons */}
+        <div className="result__actions">
+          <button
+            className="result__btn result__btn--share"
+            onClick={handleShare}
+            style={{
+              borderColor: character.elementColor,
+              color: character.elementColor,
+            }}
+          >
+            分享结果
+          </button>
+          <button
+            className="result__btn result__btn--restart"
+            onClick={onRestart}
+          >
+            重新测试
+          </button>
+        </div>
       </div>
 
-      {/* ========== TOAST ========== */}
+      {/* ═══════ TOAST ═══════ */}
       <div
         className={
-          'result__toast' + (toastVisible ? ' result__toast--visible' : '')
+          'result__toast' + (toastVisible ? ' result__toast--show' : '')
         }
         role="status"
         aria-live="polite"
