@@ -1,0 +1,142 @@
+{
+  "ZHONGLI": {
+    "path": "ysti-v2/portraits/ZHONGLI.png",
+    "size": 15976,
+    "endpoint": "icon-big"
+  },
+  "HUTAO": {
+    "path": "ysti-v2/portraits/HUTAO.png",
+    "size": 17914,
+    "endpoint": "icon-big"
+  },
+  "KEQING": {
+    "path": "ysti-v2/portraits/KEQING.png",
+    "size": 16684,
+    "endpoint": "icon-big"
+  },
+  "VENTI": {
+    "path": "ysti-v2/portraits/VENTI.png",
+    "size": 14222,
+    "endpoint": "icon-big"
+  },
+  "GANYU": {
+    "path": "ysti-v2/portraits/GANYU.png",
+    "size": 13936,
+    "endpoint": "icon-big"
+  },
+  "XIAO": {
+    "path": "ysti-v2/portraits/XIAO.png",
+    "size": 14480,
+    "endpoint": "icon-big"
+  },
+  "NAHIDA": {
+    "path": "ysti-v2/portraits/NAHIDA.png",
+    "size": 22018,
+    "endpoint": "icon-big"
+  },
+  "TARTAGLIA": {
+    "path": "ysti-v2/portraits/TARTAGLIA.png",
+    "size": 18268,
+    "endpoint": "icon-big"
+  },
+  "AYAKA": null,
+  "KLEE": {
+    "path": "ysti-v2/portraits/KLEE.png",
+    "size": 17000,
+    "endpoint": "icon-big"
+  },
+  "RAIDEN": null,
+  "WANDERER": {
+    "path": "ysti-v2/portraits/WANDERER.png",
+    "size": 18046,
+    "endpoint": "icon-big"
+  },
+  "QIQI": {
+    "path": "ysti-v2/portraits/QIQI.png",
+    "size": 14340,
+    "endpoint": "icon-big"
+  },
+  "FURINA": {
+    "path": "ysti-v2/portraits/FURINA.png",
+    "size": 20626,
+    "endpoint": "icon-big"
+  },
+  "ZHONGLI_BROKE": {
+    "path": "ysti-v2/portraits/ZHONGLI_BROKE.png",
+    "size": 15976,
+    "endpoint": "icon-big"
+  },
+  "DILUC": {
+    "path": "ysti-v2/portraits/DILUC.png",
+    "size": 17078,
+    "endpoint": "icon-big"
+  },
+  "JEAN": {
+    "path": "ysti-v2/portraits/JEAN.png",
+    "size": 11918,
+    "endpoint": "icon-big"
+  },
+  "ALBEDO": {
+    "path": "ysti-v2/portraits/ALBEDO.png",
+    "size": 14526,
+    "endpoint": "icon-big"
+  },
+  "BENNETT": {
+    "path": "ysti-v2/portraits/BENNETT.png",
+    "size": 13960,
+    "endpoint": "icon-big"
+  },
+  "FISCHL": {
+    "path": "ysti-v2/portraits/FISCHL.png",
+    "size": 15516,
+    "endpoint": "icon-big"
+  },
+  "KAZUHA": null,
+  "YOIMIYA": {
+    "path": "ysti-v2/portraits/YOIMIYA.png",
+    "size": 21580,
+    "endpoint": "icon-big"
+  },
+  "EULA": {
+    "path": "ysti-v2/portraits/EULA.png",
+    "size": 16782,
+    "endpoint": "icon-big"
+  },
+  "ALHAITHAM": {
+    "path": "ysti-v2/portraits/ALHAITHAM.png",
+    "size": 17038,
+    "endpoint": "icon-big"
+  },
+  "CYNO": {
+    "path": "ysti-v2/portraits/CYNO.png",
+    "size": 16284,
+    "endpoint": "icon-big"
+  },
+  "KOKOMI": null,
+  "YELAN": {
+    "path": "ysti-v2/portraits/YELAN.png",
+    "size": 12272,
+    "endpoint": "icon-big"
+  },
+  "SHENHE": {
+    "path": "ysti-v2/portraits/SHENHE.png",
+    "size": 16124,
+    "endpoint": "icon-big"
+  },
+  "NEUVILLETTE": {
+    "path": "ysti-v2/portraits/NEUVILLETTE.png",
+    "size": 17180,
+    "endpoint": "icon-big"
+  },
+  "NAVIA": {
+    "path": "ysti-v2/portraits/NAVIA.png",
+    "size": 22756,
+    "endpoint": "icon-big"
+  },
+  "ITTO": {
+    "path": "ysti-v2/portraits/ITTO.png",
+    "size": 20988,
+    "endpoint": "icon-big"
+  },
+  "PAIMON": null
+}

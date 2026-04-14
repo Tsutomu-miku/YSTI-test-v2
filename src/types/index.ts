@@ -22,6 +22,7 @@ export interface Character {
   intro: string;
   desc: string;
   pattern: string;
+  image?: string;
   isFallback?: boolean;
 }
 

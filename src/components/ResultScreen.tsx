@@ -19,25 +19,14 @@ interface ResultScreenProps {
 }
 
 const ELEMENT_MAP: Record<string, string> = {
-  '火': '🔥',
-  '水': '💧',
-  '雷': '⚡',
-  '风': '🍃',
-  '冰': '❄️',
-  '草': '🌿',
-  '岩': '🪨',
-  '???': '✨',
+  '火': '🔥', '水': '💧', '雷': '⚡', '风': '🍃',
+  '冰': '❄️', '草': '🌿', '岩': '🪨', '???': '✨',
 };
 
 const ELEMENT_CSS_VAR: Record<string, string> = {
-  '火': 'var(--pyro)',
-  '水': 'var(--hydro)',
-  '雷': 'var(--electro)',
-  '风': 'var(--anemo)',
-  '冰': 'var(--cryo)',
-  '草': 'var(--dendro)',
-  '岩': 'var(--geo)',
-  '???': 'var(--gold)',
+  '火': 'var(--pyro)', '水': 'var(--hydro)', '雷': 'var(--electro)',
+  '风': 'var(--anemo)', '冰': 'var(--cryo)', '草': 'var(--dendro)',
+  '岩': 'var(--geo)', '???': 'var(--gold)',
 };
 
 function levelBarWidth(level: Level): string {
@@ -50,7 +39,6 @@ function levelBarColor(level: Level): string {
 
 const ResultScreen: React.FC<ResultScreenProps> = ({ result, onRestart }) => {
   const [showToast, setShowToast] = useState(false);
-
   const { finalType, badge, sub, levels, ranked } = result;
   const elementColor = ELEMENT_CSS_VAR[finalType.element] || 'var(--gold)';
   const elementEmoji = ELEMENT_MAP[finalType.element] || '✨';
@@ -59,34 +47,26 @@ const ResultScreen: React.FC<ResultScreenProps> = ({ result, onRestart }) => {
     const dimText = dimensionOrder
       .map(dim => `${dimensions.find(d => d.key === dim)?.name || dim}: ${levels[dim]}`)
       .join(' | ');
-
     const text = [
       `【YSTI v2.0 测试结果】`,
       `我是：${finalType.cn}（${finalType.element}元素）`,
-      badge,
-      ``,
-      `维度：${dimText}`,
-      ``,
-      `"${finalType.intro}"`,
-      ``,
+      badge, ``,
+      `维度：${dimText}`, ``,
+      `"${finalType.intro}"`, ``,
       `来测测提瓦特中的你吧！`,
     ].join('\n');
-
     try {
       await navigator.clipboard.writeText(text);
-      setShowToast(true);
-      setTimeout(() => setShowToast(false), 2000);
     } catch {
-      // Fallback: prompt
       const ta = document.createElement('textarea');
       ta.value = text;
       document.body.appendChild(ta);
       ta.select();
       document.execCommand('copy');
       document.body.removeChild(ta);
-      setShowToast(true);
-      setTimeout(() => setShowToast(false), 2000);
     }
+    setShowToast(true);
+    setTimeout(() => setShowToast(false), 2000);
   }, [finalType, badge, levels]);
 
   const top3 = ranked.slice(0, 3);
@@ -98,6 +78,21 @@ const ResultScreen: React.FC<ResultScreenProps> = ({ result, onRestart }) => {
         className="result__hero"
         style={{ '--element-color': elementColor } as React.CSSProperties}
       >
+        {/* Character Portrait */}
+        {finalType.image && (
+          <div className="result__portrait">
+            <img
+              src={finalType.image}
+              alt={finalType.cn}
+              className="result__portrait-img"
+            />
+            <div
+              className="result__portrait-glow"
+              style={{ background: elementColor }}
+            />
+          </div>
+        )}
+
         <span className="result__element-icon">{elementEmoji}</span>
         <h1 className="result__character-name">{finalType.code}</h1>
         <p className="result__character-cn">{finalType.cn}</p>
@@ -144,10 +139,14 @@ const ResultScreen: React.FC<ResultScreenProps> = ({ result, onRestart }) => {
         {top3.map((r, i) => (
           <div className="rank-row" key={r.character.code}>
             <span className="rank-row__position">{i + 1}</span>
-            <span className="rank-row__name">
-              {ELEMENT_MAP[r.character.element] || '✨'}{' '}
-              {r.character.cn}
+            <span className="rank-row__icon">
+              {r.character.image ? (
+                <img src={r.character.image} alt={r.character.cn} className="rank-row__avatar" />
+              ) : (
+                ELEMENT_MAP[r.character.element] || '✨'
+              )}
             </span>
+            <span className="rank-row__name">{r.character.cn}</span>
             <span className="rank-row__score">{r.similarity}%</span>
           </div>
         ))}
@@ -155,12 +154,8 @@ const ResultScreen: React.FC<ResultScreenProps> = ({ result, onRestart }) => {
 
       {/* Actions */}
       <div className="result__actions">
-        <button className="btn-gold" onClick={onRestart}>
-          重新测试
-        </button>
-        <button className="btn-secondary" onClick={handleShare}>
-          分享结果
-        </button>
+        <button className="btn-gold" onClick={onRestart}>重新测试</button>
+        <button className="btn-secondary" onClick={handleShare}>分享结果</button>
       </div>
 
       {showToast && <div className="toast">已复制到剪贴板！</div>}
